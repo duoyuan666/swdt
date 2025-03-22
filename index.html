@@ -39,6 +39,7 @@
         .actions {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
         
         .btn {
@@ -54,6 +55,26 @@
         
         .btn:hover {
             background-color: #2980b9;
+        }
+        
+        .filename-container {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .filename-label {
+            color: white;
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+        
+        #filename-input {
+            padding: 5px;
+            border-radius: 3px;
+            border: none;
+            width: 120px;
+            font-size: 0.9rem;
         }
         
         .container {
@@ -161,6 +182,10 @@
     <div class="header">
         <div class="title">Markdown编辑器 (XMind兼容)</div>
         <div class="actions">
+            <div class="filename-container">
+                <label for="filename-input" class="filename-label">文件名:</label>
+                <input type="text" id="filename-input" placeholder="mindmap" value="mindmap">
+            </div>
             <button id="export-btn" class="btn">导出为MD</button>
             <button id="clear-btn" class="btn">清空</button>
             <button id="help-btn" class="btn">XMind格式帮助</button>
@@ -229,6 +254,7 @@
         const helpBtn = document.getElementById('help-btn');
         const infoPanel = document.getElementById('info-panel');
         const closeInfo = document.getElementById('close-info');
+        const filenameInput = document.getElementById('filename-input');
         
         // 设置初始内容
         editor.value = defaultContent;
@@ -240,19 +266,30 @@
         
         // 导出为MD文件
         function exportMarkdown() {
+            // 获取自定义文件名
+            let filename = filenameInput.value.trim();
+            // 如果为空，使用默认名称
+            if (!filename) {
+                filename = 'mindmap';
+            }
+            // 确保文件名有.md后缀
+            if (!filename.toLowerCase().endsWith('.md')) {
+                filename += '.md';
+            }
+            
             const markdown = editor.value;
             const blob = new Blob([markdown], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'mindmap.md';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
             // 显示成功消息
-            showMessage('文件已成功导出！可以在XMind中打开');
+            showMessage(`文件 "${filename}" 已成功导出！可以在XMind中打开`);
         }
         
         // 清空编辑器
